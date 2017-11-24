@@ -105,7 +105,7 @@ class MysqlTwistedPipeline(object):
                             VALUES
                             (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) 
                 """
-        cursor.execute(insert_sql, (item['url'], item['url_object_id'], item['front_image_url'],
+        cursor.execute(insert_sql, (item['url'], item['url_object_id'], item['front_image_url'][0],
                                     item['image_file_path'], item['title'], item['content'], item['tags'],
                                     int(item['comment_nums']), int(item['fa_nums']), int(item['vote_nums'])))
         pass
@@ -114,6 +114,6 @@ class MysqlTwistedPipeline(object):
 class ArticleImagePipeline(ImagesPipeline):
     def item_completed(self, results, item, info):
         for ok, value in results:
-            image_file_path = value["path"]
-        item["image_file_path"] = image_file_path
+            if "front_image_url" in item:
+                item["image_file_path"] = value["path"]
         return item
